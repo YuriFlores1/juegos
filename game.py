@@ -1,5 +1,29 @@
 from juego import PiedraPapelTijera
 
+def mostrar_eleccion(eleccion):
+    """Muestra la elección del jugador o la computadora de forma visual"""
+    if eleccion == 'piedra':
+        return """
+       _______
+      |       |
+      | Piedra|
+      |_______|
+        """
+    elif eleccion == 'papel':
+        return """
+       _______
+      |       |
+      | Papel |
+      |_______|
+        """
+    elif eleccion == 'tijera':
+        return """
+       _______
+      |       |
+      |Tijera |
+      |_______|
+        """
+
 def jugar():
     juego = PiedraPapelTijera()
     
@@ -14,17 +38,25 @@ def jugar():
             continue
 
         computadora = juego.obtener_eleccion_computadora()
-        print(f"La computadora eligió: {computadora}")
+        print(f"\nTu elección:\n{mostrar_eleccion(jugador)}")
+        print(f"La computadora eligió:\n{mostrar_eleccion(computadora)}")
         
         resultado = juego.determinar_ganador(jugador, computadora)
-        print(resultado)
+        print(f"\n{resultado}")
         
         # Mostrar puntos y victorias después de cada ronda
         print(juego.mostrar_puntos())
         print(juego.mostrar_victorias())
         
-        otra_vuelta = input("¿Quieres jugar otra vez? (s/n): ").lower()
-        if otra_vuelta != 's':
+        otra_vuelta = input("\n¿Quieres jugar otra vez? (s/n): ").lower()
+        
+        if otra_vuelta == 's':
+            continuar = input("¿Quieres reiniciar el juego? (s/n): ").lower()
+            if continuar == 's':
+                juego = PiedraPapelTijera()  # Reinicia el juego
+                print("\nEl juego ha sido reiniciado.\n")
+                continue
+        else:
             print("Gracias por jugar!")
             break
 
