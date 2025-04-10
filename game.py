@@ -19,8 +19,12 @@ def jugar():
         resultado = juego.determinar_ganador(jugador, computadora)
         print(resultado)
         
+        # Mostrar los puntos después de cada ronda
+        print(juego.mostrar_puntos())
+        
         otra_vuelta = input("¿Quieres jugar otra vez? (s/n): ").lower()
         if otra_vuelta != 's':
+            print("Gracias por jugar!")
             break
 
 if __name__ == "__main__":
