@@ -5,7 +5,7 @@ def jugar():
     
     print("¡Bienvenido al juego Piedra, Papel o Tijera!")
     print("Elige entre 'piedra', 'papel' o 'tijera'.")
-
+    
     while True:
         jugador = input("Tu elección: ").lower()
         
@@ -19,8 +19,9 @@ def jugar():
         resultado = juego.determinar_ganador(jugador, computadora)
         print(resultado)
         
-        # Mostrar los puntos después de cada ronda
+        # Mostrar puntos y victorias después de cada ronda
         print(juego.mostrar_puntos())
+        print(juego.mostrar_victorias())
         
         otra_vuelta = input("¿Quieres jugar otra vez? (s/n): ").lower()
         if otra_vuelta != 's':
