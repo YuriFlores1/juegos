@@ -1,0 +1,62 @@
+🛠️ PASO 1: Ajustar el Scraper (El Extractor)
+Dependiendo de si tu scraper corre en la Extensión de Chrome (content-buzon.js) o en el Backend (extraction.parser.ts), debes buscar la parte donde extraes la fecha de la tabla de SUNAT y reemplazarla por esta lógica.
+
+Esta función agarra el texto exacto "13/04/2026 08:56:15", lo parte y lo convierte en una fecha estricta con la hora de Perú (-05:00) para que la base de datos no se confunda:
+
+JavaScript
+// Función para convertir la fecha de SUNAT a fecha global exacta
+function parseSunatDate(fechaTexto) {
+  if (!fechaTexto) return null;
+  
+  // Limpiamos espacios extra (Ej: "13/04/2026 08:56:15")
+  const cleanText = fechaTexto.trim();
+  
+  // Partimos el texto en Día y Hora
+  const [datePart, timePart] = cleanText.split(' ');
+  
+  if (!datePart) return null;
+
+  // Extraemos día, mes y año
+  const [dia, mes, anio] = datePart.split('/');
+  
+  // Si SUNAT no nos da la hora por algún motivo, asumimos mediodía. 
+  // Si la da, la tomamos tal cual.
+  const time = timePart || '12:00:00'; 
+
+  // 🔥 LA MAGIA: Armamos un ISO String con el Timezone de Perú (-05:00)
+  // Formato final: "2026-04-13T08:56:15-05:00"
+  const isoString = `${anio}-${mes}-${dia}T${time}-05:00`;
+  
+  return new Date(isoString);
+}
+
+// Así la usarías en tu código de extracción:
+// const fechaMensaje = parseSunatDate(celdaFecha.innerText);
+🎨 PASO 2: Ajustar el Frontend (React)
+Ahora que la base de datos ya tiene la hora exacta, tenemos que decirle a React que la muestre en tu tabla.
+
+Ve a tu archivo de React donde muestras la tabla (frontend/src/features/inbox/components/InboxTable.tsx o si usas un archivo de utilidades como utils.ts).
+
+Busca dónde imprimes la fecha (seguramente dice algo como .toLocaleDateString() o usa dayjs/date-fns) y cámbialo a .toLocaleString():
+
+TypeScript
+// Reemplaza tu formateador actual por este:
+export const formatBuzonDate = (dateString: string | Date) => {
+  if (!dateString) return 'Sin fecha';
+  
+  const date = new Date(dateString);
+  
+  // Formateamos para que muestre Día/Mes/Año y Hora:Minuto:Segundo
+  return date.toLocaleString('es-PE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false // true si quieres AM/PM, false para formato 24h
+  });
+};
+
+// En tu tabla o HTML se vería así:
+// <td>{formatBuzonDate(mensaje.fechaMensaje)}</td>
